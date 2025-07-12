@@ -95,4 +95,4 @@ NUM_CLASSES = 80
 
 ## ✨ Author
 
-This project was generated and structured by OpenAI's ChatGPT with your enhancement instructions and architecture design.
+mustafa ahmed
