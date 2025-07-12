@@ -1,116 +1,98 @@
-# EfficientDet-D0 Enhanced (PyTorch, COCO2017)
+# EfficientDet-D0 (Custom Implementation for COCO 2017)
 
-This repository contains a fully customized and optimized implementation of **EfficientDet-D0**, enhanced for better accuracy and speed on the **COCO 2017** dataset.
+This project is a clean and enhanced implementation of **EfficientDet-D0**, modified for performance and structure clarity. It is optimized for training on the **COCO 2017 dataset**, using:
 
----
-
-## 🚀 Key Enhancements
-
-- ✅ EfficientNet-B0 used as backbone, extracting only **block2a** output (40 channels)
-- ✅ Channels reduced to 64 via `conv_reduce`
-- ✅ **BiFPN** redesigned to use only **2 layers** with **Softplus-learnable weighted fusion**
-- ✅ Only **P3, P4, P5** levels used (no P6/P7)
-- ✅ Custom anchor generator for P3–P5
-- ✅ FP16 training supported
-- ✅ Optimized for **mAP@50** and real-time inference (low FLOPs, high FPS)
+- A simplified EfficientNet-B0 backbone (block2a only)
+- A 2-layer BiFPN with Softplus-based feature fusion
+- Custom heads for box regression and classification
+- PyTorch-based training pipeline with DataLoader and COCO annotation support
+- FP16-ready design (no quantization)
 
 ---
 
-## 📁 Project Structure
+## 🗂️ Project Structure
 
 ```
-.
-├── backbone.py         # Custom EfficientNet-B0 (only block2a)
-├── bifpn.py            # 2-layer BiFPN with Softplus fusion
-├── head.py             # Classification and box regression heads
-├── det.py              # Complete EfficientDet-D0 model
-├── config.py           # Hyperparameters and model settings
-├── train.py            # Training loop with FP16 + SGD + COCO
-├── validation.py       # COCO mAP evaluation using pycocotools
-├── dataloader.py       # COCO loader
-├── transforms.py       # Data augmentation and normalization
-├── processing.py       # Post-processing, decoding boxes
-├── utils.py, tools.py  # Helper functions and loss
-├── anchors.py          # Anchor generation for P3–P5
-└── main.py             # Entry point for training / evaluation
-```
-
----
-
-## 🧠 Model Architecture
-
-```text
-Input Image 512x512
-   ↓
-EfficientNet-B0 (block2a)
-   ↓
-Conv1x1 Reduce (40→64 channels)
-   ↓
-P3 = output
-P4 = MaxPool(P3)
-P5 = MaxPool(P4)
-   ↓
-BiFPN (2 layers, Softplus fusion)
-   ↓
-Class / Box Heads (3 heads each)
+efficientdet_d0/
+├── main.py
+├── train.py
+├── validation.py
+├── dataloader.py
+├── config.py
+├── utils/
+│   ├── utils.py
+│   ├── tools.py
+│   └── transforms.py
+├── model/
+│   ├── __init__.py
+│   ├── det.py
+│   ├── backbone.py
+│   ├── bifpn.py
+│   ├── head.py
+│   ├── module.py
+│   └── efficientnet/
+│       ├── __init__.py
+│       └── utils.py
+├── dataset/
+│   └── coco/
+│       ├── images/
+│       │   ├── train2017/
+│       │   └── val2017/
+│       └── annotations/
+│           ├── instances_train2017.json
+│           └── instances_val2017.json
 ```
 
 ---
 
-## 📦 Requirements
+## 🚀 How to Train
 
-- Python ≥ 3.8
-- PyTorch ≥ 1.10
+Make sure your environment includes:
+
+- PyTorch
 - torchvision
 - pycocotools
-- tqdm, opencv-python, Pillow, numpy
+- Python 3.8+
 
-Install:
-```bash
-pip install -r requirements.txt
-```
-
----
-
-## 📂 COCO Dataset Setup
-
-```
-coco/
-├── images/
-│   ├── train2017/
-│   └── val2017/
-└── annotations/
-    ├── instances_train2017.json
-    └── instances_val2017.json
-```
-
----
-
-## 🏋️‍♂️ Train the Model
+Then run:
 
 ```bash
-python main.py -mode trainval -model efficientdet-d0 --cuda
+python3 main.py -mode trainval -model efficientdet-d0 --cuda
 ```
 
 ---
 
-## 🧪 Evaluate mAP@50
+## 🔧 Configuration
 
-```bash
-python main.py -mode eval -model efficientdet-d0 --cuda
+You can modify training paths and parameters in `config.py`:
+
+```python
+TRAIN_SET = dataset/coco/images/train2017
+VAL_SET = dataset/coco/images/val2017
+TRAIN_ANNOTATIONS = dataset/coco/annotations/instances_train2017.json
+VAL_ANNOTATIONS = dataset/coco/annotations/instances_val2017.json
+BATCH_SIZE = 4
+NUM_CLASSES = 80
 ```
 
 ---
 
-## 📈 Expected Outcome
+## ✅ Features
 
-- +3% improvement in **mAP@50** over original EfficientDet-D0
-- Reduced model **FLOPs**
-- Faster inference with FP16 + Softplus
-- COCO-compatible predictions using pycocotools
+- Modular code structure
+- BiFPN with learnable weights (Softplus fusion)
+- EfficientNet-B0 as base backbone
+- Compatible with COCO evaluation tools
 
 ---
 
-## 🔐 License
+## 📌 Notes
 
-MIT — Free to use and modify with citation.
+- Loss functions and evaluation metrics should be plugged in as needed (currently placeholder).
+- Anchors generation and NMS are not implemented in this minimal version (add if needed).
+
+---
+
+## ✨ Author
+
+This project was generated and structured by OpenAI's ChatGPT with your enhancement instructions and architecture design.
